@@ -1,0 +1,1565 @@
+#include<dos.h>
+#include<time.h>
+#include<math.h>
+#include<stdio.h>
+#include<conio.h>
+#include<string.h>
+#include<ctype.h>
+#include<stdlib.h>
+#include<graphics.h>
+
+#include "1621\\mouse.cpp"
+#include "1621\\bgad_lev.cpp"
+#include "1621\\et_games.cpp"
+
+#define BGI_LOC  "c:\\tc\\bgi"
+
+
+int pointer=0, track=0 ,page[10][1];
+
+
+/********************* USER DEFINED FUNCIONS ******************************/
+
+void intro_typ(void);
+void set_color(void);         //a d
+void book_name(void);
+void open_book(void);         //almost done
+void help_menu(void);
+void close_book(void);        //a d	 //a d
+void init_graph(void);        //done
+void begin_menu(void);        //a d
+void games_menu(void);
+void exit_noexit(void);
+void blevel_menu(void);       //a d
+void adlevel_menu(void);      //a d
+void about_author(void);
+//void use_cross(int score);
+void clear_pages(int num);
+void use_back_arrow(void);
+void last_close_book(void);
+void help_menu_screen(void);
+void begin_menu_screen(void);
+void games_menu_screen(void);
+void bubble_game_screen(void);
+void blevel_menu_screen(void);
+void adlevel_menu_screen(void);
+void draw_arrow(int col1,int col2);
+void make_sound(int freq,int hold);
+void show_score(int num,int x,int y);
+int prev_next_back(int prev,int next);
+void draw_bubble(int x1,int y1,int col,int up);
+void menu_text(int x,int y,char *text,int col);
+void color_text(int x,int y,char *text,int col);
+void draw_prev_next(int col1,int col2,int prev);
+void draw_cross(int x1,int y1,int col1,int col2);
+void menu_screen(int start,int end,int y1,int col);
+void draw_3dbox(int x1,int y1,int x2,int y2,int c1);
+void button(int x1,int y1,int x2,int y2,int col, int sty);
+void undr_line(int x,int y,int no,int len,int gap,int col);   // a d
+void showtext_window(int x1,int y1,int c1,int c2,int header,int text);  //a d
+void draw_brief_window(int x1,int y1,int x2,int y2,int state,int c1,int c2);	//a d
+void menu_choice(int start,int end,int y1,int ncol,int ccol,int menu,int *x,int *y);
+void caption_box(int x1,int y1,int x2,int y2,int x3,int y3,int size,char* name);//a d
+void up_down_button(int x1,int y1,int x2,int y2,int x3,int y3,int n,int col1,int col2,int col3);
+void file_open4_screen(FILE *fp,int initx,int inity,int gap,int col,int tchars,int lchars,int pos);
+int file_prev_next(int array_indx, int page_number);
+/**************************************************************************/
+
+/*************************GLOBAL DECLARATION*******************************/
+
+  char lines[][25] = {
+		"Introduction","Begin Study","  Beginner Level",
+		"  Advanced Level","Games","Help","Authors",
+		"Learning Keys","a,s,d,f",
+		"j,k,l,;","r,u,t,y","v,b,n,m","e,i,g,h",
+		"q,w,o,p","c,x,z,.", "Left/Right Shift",
+		"Numeric keys","Symbolic keys","Continue","Ok",
+		"Open-up","Yes","No","Close","Pop-up Bubbles","Crossword Puzzle",
+		"Hanging Bricks","Back","Word Drills","  Drill A","  Drill B",
+		"  Drill C","Sentence Writing","Story Writing" ,"  Cinderella",
+		"  Snow White","  Hansel and Gretel","About Beginner Level",
+		"About Advanced Level", "About Games","Features"
+		};
+
+ char explain[][5][25] =     //jotil!!!
+     {
+	   {"Click to learn","the key features","of typing with this ", "interactive overview.",""},
+	   {"Click on one of","the levels to start","personalized guided","studying with multy-", "-form exercises."},
+	   {"The Beginner level","introduces you to","all of the albhabet","keys,the number","and symbol keys."},
+	   {"The Advanced level","will get your fingers" ,"warmed up and let","you try typing some","advanced text."},
+	   {"The Game emphasizes","rhythms & consistency","as well as accuracy.","",""},
+	   {"Click to meet up", "all your queries","about `Easy Typing'.","",""},
+	   {"Click to know","what the authors","want to say:","   - FARIHA NAZMUL","   - TAHMINA TAHSIN"},
+	   {"Click to learn all","the keys on the","keyboard with an", "exclusive animation."},
+	   {"Click to learn","how to type the","`a' `s' `d' `f'" , "keys.",""},
+	   {"Click to learn","how to type the","`j' `k' `l' `;' `''" , "keys.",""},
+	   {"Click to learn","how to type the","`r' `u' `t' `y'" , "keys.",""},
+	   {"Click to learn","how to type the","`v' `b' `n' `m'" , "keys.",""},
+	   {"Click to learn","how to type the" ,"`e' `i' `g' `h'" , "keys.",""},
+	   {"Click to learn","how to type the","`q' `w' `o' `p'" , "keys.",""},
+	   {"Click to learn","how to type the","`c' `x' `z' `.' `,'" , "keys .",""},
+	   {"Click to learn","the left shift ","and the right shift" , "keys with all the","albhabets."},
+	   {"Click to learn how","to type the numeric","keys.","",""},
+	   {"Click to learn how","to type the symbolic","keys.","",""},
+	   {"If you want to close", "the book click on","the cross mark.","",""},
+	   {"Click here to go","back to the main","index.","",""},
+	   {"Click on one of" ,"the drills to","practice typing","words.",""},
+	   {"Click here to" ,"practice drill A ","","",""},
+	   {"Click here to" ,"practice drill B ","","",""},
+	   {"Click here to" ,"practice drill C ","","",""},
+	   {"Click here to","practice sentence","writing using all","the keys." ,""},
+	   {"Click on one of","the stories to","practice story","writing.",""},
+	   {"Click here to","write the storie ","`Cinderella'.","",""},
+	   {"Click here to","write the storie ","`Snow White'.","",""},
+	   {"Click here to","write the storie ","`Hensel and Gretel'.","",""},
+    };
+/**************************************************************************/
+
+int main()
+{
+	init_graph();
+	set_color();
+	close_book();
+	return 0;
+}
+
+/* this function initializes the graphics mode */
+void init_graph(void)
+{
+	int gdriver = DETECT, gmode, errorcode;		/* request auto detection */
+
+	initgraph(&gdriver, &gmode,BGI_LOC);
+	errorcode = graphresult();			/* read result of initialization */
+	if (errorcode != grOk)  			/* an error occurred */
+	{
+		printf("Graphics error: %s\n", grapherrormsg(errorcode));
+		printf("Press any key to halt:");
+		getch();
+		exit(1);             			/* return with error code */
+	}
+}
+
+
+void set_color(void)
+{
+	setrgbpalette(0,250,50,40);         /* very light brown */
+	setrgbpalette(1,755,155,455);       /* light brown */
+	setrgbpalette(2,380,300,950); 	    /* light pink */
+	setrgbpalette(3,0,0,0);		    /* black */
+}
+
+/* this function shows the starting closed book	*/
+void close_book()
+{
+	int i,x,y;
+
+	setfillstyle(1,6);   	/* main book */
+	bar(215,60,430,430);
+
+	setfillstyle(1,4);   	/* left red border of the book */
+	bar(215,60,230,430);
+	bar(205,70,230,422);
+
+	/* curved portion on the left side of the book */
+	setcolor(4);
+	setfillstyle(1,4);
+	sector(215,70,180,90,10,10);
+	sector(215,420,180,270,10,10);
+
+	setfillstyle(1,3);
+	bar(430,62,440,429);  		 /* the seen pages for the dimension */
+	setfillstyle(1,0);
+	bar(431,70,435,420);
+
+	setlinestyle(SOLID_LINE,1,1);    /*light ash lines on the side of pages*/
+	setcolor(7);
+	line(441,62,441,429);
+	line(430,430,440,430);
+	line(215,432,431,432);
+
+	setcolor(3);      		/* black border on the sides */
+	setlinestyle(SOLID_LINE,1,2);
+	rectangle(230,60,430,431);
+	rectangle(430,62,440,429);
+	line(215,60,231,60);
+	line(215,431,231,431);
+	setcolor(6);                    /* brown lines */
+	line(205,70,205,420);
+	line(230,61,230,429);
+
+	setcolor(0);
+	setlinestyle(SOLID_LINE,1,2);  //3
+	for(i=0,y=79;i<16;i++,y+=22)    /* the dots */
+		circle(222,y,2);
+
+	setcolor(3);  			/* spiral portion of the book */
+	for(i=0,y=75;i<16;i++,y+=22)
+	{
+		ellipse(213,y,142,340,11,9);
+		ellipse(213,y+4,142,340,10,8);   //y+1
+	}
+
+	setfillstyle(1,1);
+	bar(250,80,405,81); 		/* uppermost thin bar */
+	bar(250,80,251,220);		/* left bar */
+	bar(320,410,410,411); 		/* lower bar */
+	bar(410,410,411,315);		/* rightmost bar */
+
+	settextstyle(1,0,2);
+	//setcolor(0);
+	color_text(300,120,"EASY",0);	/* light brown text */
+	color_text(290,140,"TYPING",0);
+
+	draw_3dbox(290,350,360,370,1);
+	settextstyle(0,0,1);            /* the button on the book */
+	color_text(298,356,lines[20],0);
+
+	i=0;
+	if (mousePresent())
+		showMouse();		/* use of mouse to open the book */
+	while(1)
+	{
+		while(1)
+		{
+			x=getMouseX();  /* get the posion of mouse cursor */
+			y=getMouseY();
+			if(x>=290 && x<= 360 && y>=350 && y<=370 && !i)
+			{
+				hideMouse();                     /* if the mouse*/
+				draw_3dbox(290,350,360,370,0);   /* is on the button*/
+				color_text(298,356,lines[20],6); /*change color*/
+				showMouse();
+				i=1;                             /* if color is changed i=1*/
+			}
+			else if((x<290|| x>360|| y<350|| y>370) && i)
+			{
+				hideMouse();                     /* when mouse changes position */
+				draw_3dbox(290,350,360,370,1);   /* and i=1 change the color */
+				color_text(298,356,lines[20],0); /* of the button */
+				showMouse();                     /* to previous one */
+				i=0;                             /* i =0 when in normal color*/
+			}
+
+			if (mouseClicked())
+			{
+				x=getMouseX();     	/*get the position */
+				y=getMouseY();		/*where mouse is clicked */
+				break;
+			}
+		} /* end of while 2*/
+
+		if(x>=290 && x<= 360 && y>=350 && y<=370)	/* if clicked on the button */
+		{
+			up_down_button(290,350,360,370,298,356,20,6,6,0);
+			open_book();
+			begin_menu();			/*open the book and go to the begin menu */
+			return;
+		}
+	} /* end of while 1*/
+}
+
+void open_book()
+{
+	int i,y;
+	hideMouse();
+	draw_3dbox(30,30,getmaxx()-30,getmaxy()-30,6);  /* main brown book */
+
+	setfillstyle(1,4);   			       /* red bar in the middle */
+	bar(303,32,334,getmaxy()-32);
+
+	draw_3dbox(43,46,313,getmaxy()-46,15);          /*left page */
+	draw_3dbox(324,46,getmaxx()-46,getmaxy()-46,15);/* right page */
+
+	setlinestyle(SOLID_LINE,1,3);
+	setcolor(7);
+	for(i=0;i<2;i++)
+	{
+		line(425,67-i,573+i,67-i);    	/* right page right corner */
+		line(573-i,67+i,573-i,140);     //157
+		line(133,67-i,281+i,67-i);    	/* left page right corner */
+		line(281-i,140,281-i,67+i);     //157
+		line(356-i,341,356-i,414);  	/* right page left corner */
+		line(357+i,413-i,505,413-i);
+		line(64-i,341,64-i,414);    	/*left page left corner */
+		line(65+i,413-i,213,413-i);
+		setlinestyle(SOLID_LINE,1,1);
+		setcolor(8);    		/*for shade */
+	}
+
+	setcolor(7);
+	setfillstyle(1,7);
+	for(i=0,y=68;i<16;i++,y+=23)    /*the punched holes */
+	{
+		pieslice(303,y,0,360,4);
+		pieslice(332,y,0,360,4);
+	}
+
+	setcolor(8);  			/* spiral portion of the book */
+	setlinestyle(SOLID_LINE,1,3);
+	for(i=0,y=68;i<16;i++,y+=23)
+	{
+		arc(318,y,0,180,15);
+		arc(318,y+1,0,180,14);
+	}
+	showMouse();
+}
+
+/* this function shows the name & caption of the book on the left page */
+void book_name(void)
+{
+	hideMouse();
+	setcolor(3);
+	setlinestyle(SOLID_LINE,0,2);
+	rectangle(46,85,153,125);	/*black border of 'easy typing'*/
+	rectangle(46,125,228,175);
+	rectangle(46,205,273,231); 	/*black border of 'complete tutor'*/
+	setcolor(8);
+	rectangle(46,85,152,125);       /* ash lines used for 3d look*/
+	rectangle(46,127,227,174);
+	rectangle(46,205,272,230);
+	setcolor(15);      		/* white line at the left*/
+	line(47,87,47,173);
+
+	setfillstyle(1,2);       	/* light pink*/
+	bar(48,87,151,127);             /* pink base of 'easy typing'*/
+	bar(48,127,226,173);
+	bar(48,207,271,225);     	/* pink base of lower thin bar*/
+
+	setfillstyle(1,5);    		/* magenta side of easy typing*/
+	bar(48,87,55,173);
+	bar(48,226,271,229);
+
+	setcolor(7);			/* ash shade*/
+	line(55,87,55,173);
+	line(48,226,271,226);
+
+	settextstyle(10,0,2);
+	color_text(63,81,"EASY",7);
+	color_text(101,126,"TYPING",7);
+	color_text(62,80,"EASY",3);	/*black text*/
+	color_text(100,125,"TYPING",3);
+	settextstyle(6,0,1);
+	color_text(61,202,"The complete typing tutor",7);  /* ash shade*/
+	color_text(60,201,"The complete typing tutor",3);  /* dark ash text*/
+	showMouse();
+}
+
+/*	this function draws the underlines in the open book	*/
+void undr_line(int x,int y,int no,int len,int gap,int col)
+{
+	/* x= starting X position, y= starting Y position
+	   no= number of lines,len = the length of the line,
+	    gap= gap between two lines ,col = color of line*/
+
+	int i;
+	setcolor(col);    	/*lines under writings*/
+	setlinestyle(SOLID_LINE,1,2);
+	for(i=0;i<no;i++)
+	{
+	      line(x,y,x+len,y);
+	      y+=gap;
+	}
+}
+
+/* this function is used to open the specific file given as fn and writes
+	the contents of this file on the screen	*/
+
+void file_open4_screen(FILE *fp,int initx,int inity,int gap,int col,int tchars,int lchars,int pos){
+
+/* initx= initial x pos,gap= gap betn 2 lines,tchars= total lines of a page
+	lchars= total chars of a line, col= in which color u wanna print ur file */
+
+	int x=initx, y=inity;
+	char ch[2]; ch[1]= '\0';
+
+	int j=0,z, i;
+	track=0;
+	rewind(fp);
+
+	fseek(fp,pos,SEEK_CUR);
+
+	setcolor(col);
+	settextstyle(0,0,1);
+	for(z=1;z<=tchars;z++ ){
+		for(i=0;i<lchars;i++){
+			ch[0]= fgetc(fp); pointer++; track++;
+			if(ch[0]=='\n'){
+				x=initx; y+=gap;i=0; z++;
+
+			}
+			else{
+				outtextxy(x,y,ch);
+				x+=8;
+			}
+
+			if(z>tchars)
+				break;
+			if(feof(fp)){
+				j=1;
+				break;
+			}
+		}
+		x=initx; y+=gap;
+
+		if(j)
+			break;
+	}
+	rewind(fp);
+
+}
+
+int file_prev_next(int array_indx,int page_number){
+	FILE *file;
+	int ret=-1,page_no=0;
+	pointer=track=0;
+	file= fopen(file_name[array_indx],"r");
+
+	undr_line(359,98,16,200,18,7);
+	settextstyle(0,0,1);
+	file_open4_screen(file,360,90,18,8,16,25,0);
+	page[page_no][0]= track;
+	draw_arrow(2,5);
+	showMouse();
+
+	while(1)
+	{
+		if(page_no==0){
+			draw_prev_next(2,4,0);
+			ret = prev_next_back(0,1);
+		}
+		else if(page_no==page_number){
+			draw_prev_next(2,4,1);
+			hideMouse();
+			setfillstyle(1,15);
+			bar(551,397,568,414);
+			showMouse();
+			ret = prev_next_back(1,0);
+		}
+
+		else{
+			draw_prev_next(2,4,1);
+			draw_prev_next(2,4,0);
+			ret = prev_next_back(1,1);
+		}
+
+		if(ret==3){
+			fclose(file);	//back
+			return 1;
+		}
+		else if(ret==2)	//next
+		{
+			hideMouse();
+			setfillstyle(1,15);
+			bar(360,75,571,397);	//remove the prev page
+
+			undr_line(359,98,16,200,18,7);
+			page_no++;
+
+			file_open4_screen(file,360,90,18,8,16,25,pointer);
+			page[page_no][0]= track;
+			showMouse();
+
+		}
+		else if(ret==1){
+			hideMouse();
+			setfillstyle(1,15);
+			bar(360,75,571,397);	//remove the prev page
+			undr_line(359,98,16,200,18,7);
+
+			if(page_no==1){
+				setfillstyle(1,15);
+				bar(530,397,548,415);
+				pointer=0;
+				file_open4_screen(file,360,90,18,8,16,25,pointer);
+			}
+
+			else{
+				pointer= pointer-page[page_no][0]-page[page_no-1][0];
+				file_open4_screen(file,360,90,18,8,16,25,pointer);
+			}
+			page_no--;
+			showMouse();
+		}
+
+	}
+
+}
+
+/*	this function shows the necessary tips for typing	*/
+void intro_typ ()
+{
+	int intro_type;
+	clear_pages(2);
+	hideMouse();
+	caption_box(45,105,255,155,60,102,2,"Introduction"); /*draw the caption */
+	intro_type = file_prev_next(0,6);
+	if(intro_type)
+		return;
+}
+
+/* 	this function opens the page when the link 'authors' is clicked
+	and shows some msgs from authors	*/
+
+void about_author()
+{
+	int i,x,y,auth;
+	clear_pages(2);
+	hideMouse();
+
+	caption_box(45,105,200,155,60,102,2,"Authors");
+	setfillstyle(1,2);
+	bar(113,240,242,365);           /* the light pink bar for the names*/
+	setlinestyle(SOLID_LINE,1,3);
+	setcolor(7);			/* ash lines for shade*/
+	line(112,239,242,239);
+	line(112,239,112,366);
+	setcolor(8);			/*dark ash lines for shade*/
+	line(112,366,242,366);
+	line(242,239,242,366);
+
+	setcolor(7); 		        /* ash */
+	settextstyle(6,0,1);
+	for(i=0;i<2;i++)
+	{
+		outtextxy(119+i,245+i,"Tahmina Tahsin");      	/* the names with shade*/
+		outtextxy(155+i,265+i,"## 016");
+		outtextxy(119+i,305+i,"Fariha Nazmul");
+		outtextxy(155+i,325+i,"## 021");
+		setcolor(5);
+	}
+
+	auth= file_prev_next(1,2);
+	if(auth)
+		return;
+
+}
+
+/*	this function opens the page when the button 'open-up' on the
+	closed book is clicked and it contains the main index	*/
+void begin_menu_screen(void)
+{
+	menu_screen(0,7,180,9);
+	hideMouse();
+	book_name();
+	settextstyle(1,0,3);/*show the text "Index" at the top*/
+	color_text(420,112,"INDEX",3);
+	color_text(421,112,"INDEX",5);
+	setlinestyle(SOLID_LINE,0,1);
+	line(416,137,490,137);
+	draw_cross(86,390,2,5);		/*draw the cross mark for the close operation*/
+	showMouse();
+}
+
+/* this function controls the use of mouse on the begin menu */
+void begin_menu(void)
+{
+	int i,x,y;
+	void* ext;
+	unsigned int size;
+
+	begin_menu_screen();
+	while(1)
+	{
+		menu_choice(0,6,180,9,4,1,&x,&y);
+
+		for(i=0;i<7;i++)	//check where the mouse is clicked
+			if(x>=379&&x<=540 &&y>=180+(i*20) && y<=180+((i+1)*20))
+				break;
+		if(i==1)              //if clicked on begin study skip
+			continue;     // go to the start of the loop
+		else if(i>=0&&i<7)
+		{
+			switch(i)
+			{
+				case 0:
+					make_sound(400,20);/////////////////
+					make_sound(500,80);
+					intro_typ();  /* clicked on introduction */
+					break;
+				case 2:
+					make_sound(400,100);/////////////////
+					blevel_menu();	/* clicked on beginner level*/
+					break;
+				case 3:
+					make_sound(400,100);/////////////////
+					adlevel_menu(); /* clicked on advanced level*/
+					break;
+				case 4:
+					make_sound(400,100);/////////////////
+					games_menu(); /* games */
+					break;
+				case 5:
+					make_sound(400,100);/////////////////
+					help_menu();  //help
+					break;
+				case 6:
+					make_sound(400,100);/////////////////
+					about_author();          /* authors*/
+					break;
+			}
+			begin_menu_screen();                     /* after finishing comes back to the begin menu */
+		}
+		else if(x>=72&&x<=99 &&y>=376 &&y<=404)          /* clicked on the cross*/
+		{
+			make_sound(400,100);/////////////////
+			hideMouse();
+			size = imagesize(225,190,415,290);	/* calculate the size of the close message bar */
+			ext = malloc(size);			/* allocate memory to hold the curren image to use later*/
+			getimage(225,190,415,290,ext);		/* grab the image */
+			showMouse();
+			exit_noexit();				/* call the close function*/
+			hideMouse();
+			putimage(225,190,ext,COPY_PUT);         /* if clicked on no then get the previous image */
+			free(ext);
+			showMouse();
+		}
+		else
+			continue;		/* if not clicked on menu or cross then continue*/
+	} //end of while
+}
+
+/* this function draws screen of the beginner level menu */
+void blevel_menu_screen(void)
+{
+	menu_screen(7,18,140,9);
+	hideMouse();
+	caption_box(45,105,230,177,70,100,1,"Beginner");
+	color_text(128,132,"Level",3);		/* shows "beginner level" on the left page*/
+	settextstyle(1,0,2);/* shows the text "beginner level" at the top*/
+	color_text(360,96,lines[2],5);
+	color_text(361,96,lines[2],5);
+	draw_arrow(2,5);  	      /* back arrow */
+	showMouse();
+}
+
+/* this function controls the use of the mouse on the beginner level menu*/
+void blevel_menu(void)
+{
+	int i,j,x,y;
+	blevel_menu_screen();
+	while(1)
+	{
+		menu_choice(7,17,140,9,4,2,&x,&y);
+
+		for(i=1;i<12;i++)	/* check the position*/
+			if(x>=380&&x<=560 &&y>=120+(i*20) && y<=120+((i+1)*20))
+				break;
+
+		if(i>0&&i<12)
+		{
+			hideMouse();
+			switch(i)
+			{
+				case 2:			/*asdf*/
+				case 3:                 /* jkl;'*/
+				case 4:                 /* ruty*/
+				case 5:                /* vbnm */
+				case 6:                /*eigh*/
+				case 7:                /* qwop*/
+				case 8:               /* cx,.*/
+					make_sound(400,100);/////////////////
+					lesson_practice(i-1,0,3,2);
+					break;
+
+				case 10:            /* numeric keys*/
+					make_sound(400,100);/////////////////
+					lesson_practice(0,1,3,2);
+					break;
+
+				case 11:
+					make_sound(400,100);/////////////////
+					lesson_practice(0,2,3,2); // symbolic keys
+					break;
+
+				case 9:              /* left/right shift n all keys */
+					advanced_level(9,6,1);
+					break;
+
+				case 1:              /* learning keys*/
+					make_sound(400,100);/////////////////
+					open_book();
+					settextstyle(2,0,10);
+					hideMouse();
+					caption_box(44,105,250,155,60,102,2,"Learning Keys");
+					draw_arrow(2,5);
+					use_back_arrow();
+					break;
+
+			}
+			clearviewport();
+			open_book();
+			blevel_menu_screen();
+		}
+		else if(x>=72&&x<=99 &&y>=376 &&y<=404){   /* if clicked on back button go to the main index*/
+			make_sound(400,100);/////////////////
+			return;
+		}
+		else
+			continue;         /* if not clicked on the menu or back button continue*/
+	} 		/*end of while */
+}
+
+/* this function draws screen of the advanced level menu*/
+void adlevel_menu_screen(void)
+{
+	menu_screen(28,37,160,9);
+
+	hideMouse();
+	caption_box(45,105,230,177,70,100,1,"Advanced");
+	color_text(128,132,"Level",3);		/* show "advanced level" on the left page*/
+	settextstyle(1,0,2);			/* show the text "advanced level" at the top*/
+	color_text(360,116,lines[3],5);
+	color_text(361,116,lines[3],5);
+	draw_arrow(2,5);  	      /* back arrow */
+	showMouse();
+}
+
+/* this function controls the use of the mouse on the advanced level menu*/
+void adlevel_menu(void)
+{
+	int i,j,x,y;//,prev=0,back=0,w=0;;
+	adlevel_menu_screen();
+	while(1)
+	{
+		menu_choice(28,36,160,9,4,3,&x,&y);
+
+		for(i=1;i<10;i++)    /*check the position where the mouse is clicked*/
+			if(x>=380&&x<=560 &&y>=140+(i*20) && y<=140+((i+1)*20))
+				break;
+
+		if(i==1 || i==6)
+			continue;
+		else
+		 if(i>0&&i<10)
+		{
+			//hideMouse();
+			//open_book();
+			//settextstyle(2,0,10);
+			switch(i)
+			{
+				case 1: 			   /* word drills*/
+				case 2:
+				case 3:
+				case 4:
+					hideMouse();
+					open_book();
+					settextstyle(2,0,10);
+					make_sound(400,100);/////////////////
+					hideMouse();
+					caption_box(44,105,250,155,60,102,2,"Word drills");
+					draw_arrow(2,5);
+					use_back_arrow();
+					break;
+				case 5:          /* sentence writing*/
+					hideMouse();
+					open_book();
+					settextstyle(2,0,10);
+					make_sound(400,100);/////////////////
+					hideMouse();
+					caption_box(44,105,230,177,70,100,1,"Sentence");
+					color_text(112,132,"Writing",3);
+					draw_arrow(2,5);
+					use_back_arrow();
+					break;
+				case 6:            /* story writing*/
+					//continue;
+				case 7:   //cinderella
+				case 8:   //snow white
+				case 9:   // hansel & gretel
+					hideMouse();
+					make_sound(400,100);/////////////////
+					advanced_level(i-1,6,1);
+					break;
+
+			}
+			clearviewport();
+			open_book();
+			adlevel_menu_screen();
+		}
+		else if(x>=72&& x<=99&& y>=376&& y<=404)	/* if clicked on back arrow*/
+		{
+			make_sound(400,100);/////////////////
+			return;                                 /* go to the main menu*/
+		}
+		else
+			continue;	/* if not clicked on menu of back arrow continue*/
+
+	}/*end of while */
+}
+
+void help_menu_screen(void)
+{
+	menu_screen(37,41,200,9);             /* help*/
+	hideMouse();
+	caption_box(45,105,160,155,70,102,2,"Help");
+	settextstyle(1,0,2);/* shows the text "help" at the top*/
+	color_text(370,156,lines[5],5);
+	color_text(371,156,lines[5],5);
+	draw_arrow(2,5);
+	showMouse();
+}
+void help_menu(void)
+{
+	int i,j,x,y;
+	help_menu_screen();
+	while(1)
+	{
+		menu_choice(37,40,200,9,4,5,&x,&y);
+
+		for(i=1;i<5;i++)	/* check the position*/
+			if(x>=380&&x<=560 &&y>=180+(i*20) && y<=180+((i+1)*20))
+				break;
+
+		if(i>0&&i<5)
+		{
+			hideMouse();
+			//make_sound(400,100);
+			setfillstyle(1,15);
+			bar(360,75,571,410);	//remove the prev page
+			bar(110,270,250,375);	//remove the window
+			bar(570,220,572,240);	//remove the spot
+
+			switch(i)
+			{
+				case 1:
+					make_sound(400,100);
+					clear_pages(2);
+					caption_box(45,105,230,210,95,132,1,"Beginner");
+					color_text(120,164,"Level",3);
+					color_text(70,100,"About",3);
+					file_prev_next(2,4);
+					break;
+				case 2:
+					make_sound(400,100);
+					clear_pages(2);
+					caption_box(45,105,230,210,80,132,1,"Advanced");
+					color_text(120,164,"Level",3);
+					color_text(70,100,"About",3);
+					file_prev_next(3,4);
+					break;
+				case 3:
+					make_sound(400,100);
+					FILE *game;
+					game= fopen(file_name[4],"r");
+					file_open4_screen(game,360,108,18,8,16,25,0);
+
+					draw_arrow(2,5);	/*draw the back arrow */
+					use_back_arrow();	/* checks the positon of cursor and mouse clicked */
+					break;
+				case 4:
+					make_sound(400,100);
+					clear_pages(2);
+					caption_box(45,105,230,177,100,132,1,"Feature");
+					color_text(70,100,"About",3);
+					file_prev_next(5,2);
+					break;
+
+			}
+			help_menu_screen();
+		}
+		else if(x>=72&&x<=99 &&y>=376 &&y<=404){   /* if clicked on back button go to the main index*/
+			make_sound(400,100);/////////////////
+			return;
+		}
+		else
+			continue;         /* if not clicked on the menu or back button continue*/
+	} 		/*end of while */
+}
+
+
+
+/*	this function draws the menu screen   */
+void menu_screen(int start,int end,int y1,int col)
+{
+	/* start =starting index of the array, end =ending index of the array
+		y1 = starting position of y, col = text color of the menu */
+	int i,x,y;
+
+	//clearviewport();
+	clear_pages(2);
+	//open_book();
+	hideMouse();
+
+	undr_line(370,98,15,190,20,7);
+
+	x=380;
+	for(i=start,y=y1;i<end;i++,y+=20) /* displays the contents of the menu*/
+		menu_text(x,y,lines[i],col);  /*text written in bold*////###&&&
+
+	if(mousePresent())
+		showMouse();
+}
+
+/* this function controls the use of mouse on the menu until click*/
+void menu_choice(int start,int end,int y1,int ncol,int ccol,int menu,int *x,int *y)
+{
+	/* (start,end) = starting and ending index of the array,
+	  y1 = starting point of y,(ncol,ccol) = normal and changed color,
+	   menu = menu no.(1-4),(x,y)= keeps the position where the mouse is clicked */
+
+	int i,j=-1,prev=-1,back=0,w=0;
+	int wlag=0,mx,my;
+	if(menu ==3)
+		wlag = 8;	//for advanced level menu index of window texts
+	else if(menu==4)
+		wlag = 2;	//for games menu index of wtext
+	while(1)
+	{
+		mx=getMouseX();
+		my=getMouseY();	/* get the cursor position */
+
+		for(i=0;i<(end-start)+1;i++)
+		{
+			if(mx>=379&&mx<=560 &&my>=y1+(i*20) && my<=y1+((i+1)*20))
+			{
+				j=i+start;          /* check the position */
+				break;
+			}
+		}
+		if(j>=start&&j<=end&&(j!=prev))       /* when cursor on the index contents*/
+		{			       /* and not equal to previous position*/
+			hideMouse();	       /* change the color of the text*/
+			mx=380;
+			menu_text(mx,y1+(i*20),lines[j],ccol);
+			draw_brief_window(110,270,250,375,1,5,2);
+			if(j<24 || (j>27&&j<34))			/*draw window n show text*/
+				showtext_window(110,270,15,3,j,j-wlag);   // for all other than story and games
+			else if(j>23 && j<27)
+				showtext_window(110,270,15,3,j,4);   // for games
+			else if(j>36 && j<41)                 //for help
+				showtext_window(110,270,15,3,5,5);
+			else
+				showtext_window(110,270,15,3,33,j-wlag);  // only for story writing
+			w=0;					   /* flag to control the window*/
+			showMouse();
+		}
+		else if((mx>=72&&mx<=99 &&my>=376 &&my<=404)&&!back)
+		{
+
+			back =1;			/* flag used to control the color of the button*/
+			w=0;
+			hideMouse();
+			draw_brief_window(110,270,250,375,1,5,2);
+			if(menu==1) 	/* mouse on the close button*/
+			{
+				draw_cross(86,390,6,0);	/*change color of the close cross */
+				showtext_window(110,270,15,3,23,18);   /* draw window n show text*/
+			}
+			else  /* cursor on back arrow*/
+			{
+				draw_arrow(6,0);	/* change the color of the arrow*/////////////////////////
+				showtext_window(110,270,15,3,27,19);         /* draw window n show text*/
+			}
+			showMouse();
+
+		}
+		if((j!=prev) && prev>=start && prev<=end)		/* when mouse changes position*/
+		{				/* change the text color to normal one*/
+			w=1;
+			mx = 380;
+			hideMouse();
+			menu_text(mx,y1+((prev-start)*20),lines[prev],ncol);
+			showMouse();
+		}
+		else if((mx<72||mx>99 ||my<376 ||my>404)&& back)
+		{	    /* when mouse is moved away from the mark*/
+			back =0;	   /* get the normal color */
+			w=1;
+			hideMouse();
+			if(menu==1) 		//for the main menu
+				draw_cross(86,390,2,5);
+			else
+				draw_arrow(2,5);  //for the other menus
+			showMouse();
+		}
+		prev = j;      /* keeps the current line position to check next time as previous one*/
+		j=-1;
+		if((mx<380||mx>560||my<140||my>360) &&w)    /* remove the window */
+		{
+			hideMouse();
+			setfillstyle(1,15);
+			bar(110,270,250,375);
+			w=0;
+			showMouse();
+		}
+		if(mouseClicked())
+		{
+			*x=getMouseX();
+			*y=getMouseY();
+			while(1)
+				if(mouseReleased())		/* get the position*/
+					break;			/* where mouse is clicked*/
+				break;					/* and released */
+		}
+	}       /*end of while */
+}
+
+
+
+/* this function draws the caption box on the top of the left page */
+void caption_box(int x1,int y1,int x2,int y2,int x3,int y3,int size,char* name)
+{
+	/* (x1,y1,x2,y2) size of the box, (x3,y3) starting position of the text
+	size= size of the text, name = the text on the box */
+	setfillstyle(1,7);
+	bar(x1+8,y1+7,x2+6,y2+6);    	/* ash bar for the shadow*/
+	draw_3dbox(x1,y1,x2,y2,2);	/* the light pink bar showing text*/
+	setfillstyle(1,5);    		/* magenta*/
+	bar(x1+1,y1+1,x1+8,y2-2);	/* the bar at the left*/
+	setlinestyle(SOLID_LINE,1,1);
+	setcolor(7);
+	line(x1+8,y1+1,x1+8,y2-2);      /* light ash lines dividing the light and dark pink region*/
+	settextstyle(10,0,size);	/* black text */
+	color_text(x3,y3,name,3);
+}
+
+void clear_pages(int num)
+{
+	hideMouse();
+	setfillstyle(1,15);
+	if(num==2);
+	{
+		bar(43+25,46+25,313-35,getmaxy()-46-25);          /*left page */
+		bar(45,46+25,46+25,getmaxy()-46-25-75);
+	}
+	bar(323+35,46+25,getmaxx()-46-25,getmaxy()-46-25);/* right page */
+	bar(getmaxx()-46-80,46+25+71,getmaxx()-46-5 ,getmaxy()-46-3);
+	showMouse();
+
+}
+int prev_next_back(int prev,int next)
+{
+	int i,j=-1,x,y,pr =-1,back =0;
+	 while(1)
+	 {
+		while(1)
+		{
+			x=getMouseX();          /* get the mouse position*/
+			y=getMouseY();
+
+			for(i=0;i<2;i++)
+			{
+				if(x>=533+(i*20)&&x<=547+(i*20)&&y>=398&&y<=412 )
+				{
+					j=i;     /* check the position*/
+					break;
+				}
+			}
+			if(j>=0&&j<2&& j!=pr)
+			{
+				hideMouse();
+				/* change the color*/
+				if(j && next)
+					draw_prev_next(4,2,0);	/*cursor on next*/
+				else if(!j && prev)
+					draw_prev_next(4,2,1);  /*cursor on prev*/
+				showMouse();
+			}
+			else if(x>=72&&x<=99 &&y>=376 &&y<=404&& !back)  /* mouse on the arrow*/
+			{
+				back =1;		/* flag to conrol the color of the arrow*/
+				hideMouse();
+				draw_arrow(6,0);        /* change color*/
+				showMouse();
+			}
+			if(j!=pr && pr>=0 && pr<2)
+			{
+				hideMouse();
+				/* when mouse moves away change the color to normal one*/
+				if(pr &&next)               /*cursor on next*/
+					draw_prev_next(2,4,0);
+				else if(!pr &&prev)         /*cursor on prev*/
+					draw_prev_next(2,4,1);
+				showMouse();
+			}
+			else if((x<72||x>99 ||y<376 ||y>404)&& back)
+			{
+				back =0;              /* when mouse moves away from the arrow*/
+				hideMouse();
+				draw_arrow(2,5);	/* normal color*/
+				showMouse();
+			}
+
+			pr = j;	/* keeps the current postion to use next time as previous*/
+			j = -1;
+
+			if(mouseClicked())
+			{
+				x=getMouseX();       /*get the position where mouse is clicked*/
+				y=getMouseY();
+				while(1)
+					if(mouseReleased())
+						break;
+				break;
+			}
+		}/*end of while 2*/
+
+		/*check the position of mouse clicked*/
+		if(x>=72&&x<=99 &&y>=376 &&y<=404)
+		{
+			make_sound(400,100);
+			return 3;	//clicked on back
+		}
+		else
+		{
+			for(i=0;i<2;i++)
+				if(x>=533+(i*20)&&x<=547+(i*20)&&y>=398&&y<=412 )
+					break;
+			if((i==0) && prev)
+			{
+				make_sound(400,100);
+				return 1;         //clicked on prev
+			}
+			else if((i==1) && next)
+			{
+				make_sound(400,100);
+				return 2;	//clicked on next
+			}
+		  /*	else
+				return 0;  */
+		}
+	 }
+}
+
+void draw_prev_next(int col1,int col2,int prev)
+{
+	int dis;
+	hideMouse();
+	setlinestyle(SOLID_LINE,1,1);
+	settextstyle(0,0,1);
+
+	if(prev)	//draw up
+		dis = 0;
+	else
+		dis = 20;
+	setcolor(8);
+	circle(540+dis,405,7);
+	setfillstyle(1,col1);
+	floodfill(540+dis,405,8);
+	setcolor(col2);
+	if(prev)
+		outtextxy(536,402,"<");
+	else
+		outtextxy(557,402,">");
+	setcolor(7);
+	circle(540+dis,405,6);
+	showMouse();
+}
+/* this function draws any box with little 3d effect */
+void draw_3dbox(int x1,int y1,int x2,int y2,int c1)
+{
+	/* total window(x1,y1,x2,y2)  c1 = color of the background */
+	setlinestyle(SOLID_LINE,0,2);
+	setcolor(3);   		      		/* black*/
+	rectangle(x1,y1,x2,y2);			/* border*/
+
+	setcolor(7);  	  			/* white*/
+	line(x1+1,y1+1,x2-1,y1+1);		/* lines for 3d look*/
+	line(x1+1,y1+1,x1+1,y2-1);
+	setcolor(8);                   		/* ash lines for 3d look*/
+	line(x1,y1,x2-1,y1);              	/* top line*/
+	line(x1,y1,x1,y2-1);              	/*left line*/
+	line(x2-1,y1,x2-1,y2-1);	  	/* right line*/
+	line(x1,y2-1,x2-1,y2-1);	  	/* bottom line*/
+	setfillstyle(1,c1);
+	bar(x1+2,y1+2,x2-2,y2-2);		/* base of the box*/
+}
+
+/* this fucntion draws the back arrow in the circle */
+void draw_arrow(int col1,int col2)
+{
+	/*col1= color of the circle, col2= color of the arrow*/
+	int poly[10];
+
+	poly[0] = 92;	   poly[1] = 377;
+	poly[2] = 85;	   poly[3] = 390;     /* co-ordinates of the arrow*/
+	poly[4] = 92;	   poly[5] = 403;
+	poly[6] = 75;	   poly[7] = 390;
+	poly[8] = 92;	   poly[9] = 377;
+
+
+	setlinestyle(SOLID_LINE,0,1);
+	setcolor(3);
+	circle(86,390,16);                   /* black shade of the circle*/
+	setfillstyle(1,15);                 /* white circle to remove previous colors*/
+	floodfill(86,390,3);
+	setcolor(8);			    /* dark ash border of the circle*/
+	circle(85,390,16);
+	setfillstyle(1,col1);
+	floodfill(86,390,8);		     /* filling the circle with the col1*/
+
+	setlinestyle(SOLID_LINE,0,1);
+	setfillstyle(1,col2);                /* the col2 filled arrow*/
+	fillpoly(4,poly);
+	setcolor(3);
+	drawpoly(5,poly);		    /* border of the arrow*/
+
+	setlinestyle(SOLID_LINE,0,1);
+	//setcolor(7);
+	//line(poly[6],poly[7]+1,poly[8]-3,poly[9]+3);       /* ash and dark ash lines for the shade*/
+	setcolor(8);
+	line(poly[8]-2,poly[9]+3,poly[2]-1,poly[3]);
+	//setcolor(8);
+	//line(poly[4]-1,poly[5]-2,poly[6]+1,poly[7]);
+	setcolor(8);
+	line(poly[4]-3,poly[5]-4,poly[2]-1,poly[3]);
+}
+
+/* this function controls the use of the mouse on the back arrow when
+   there is no other clickable objects on the page */
+void use_back_arrow(void)
+{
+	int x,y,back=0;
+	if(mousePresent())
+		showMouse();
+	while(1)
+	{
+		while(1)
+		{
+			x=getMouseX();	/* get the cursor positon*/
+			y=getMouseY();
+
+			if(x>=72&&x<=99 &&y>=376 &&y<=404&& !back)  /* mouse on the arrow*/
+			{
+				back =1;		/* flag to conrol the color of the arrow*/
+				hideMouse();
+				draw_arrow(6,0);        /* change color*////////////////////////
+				showMouse();
+			}
+			else if((x<72||x>99 ||y<376 ||y>404)&& back)
+			{
+				back =0;                        /* when mouse moves away from the arrow*/
+				hideMouse();
+				draw_arrow(2,5);		/* normal color*/
+				showMouse();
+			}
+			if(mouseClicked())
+			{
+				x=getMouseX();
+				y=getMouseY();
+				while(1)
+					if(mouseReleased())		/* get the position*/
+						break;			/* where mouse is clicked*/
+				break;					/* and released */
+			}
+		 }/*end of while 2*/
+		if(x>=72&&x<=99 &&y>=376 &&y<=404){
+			make_sound(400,100);/////////////////	/* if clicked on back arrow*/
+			return;
+		}
+	}/*end of while 1*/
+}
+
+/* this function draws the cross mark on the left page of the begin menu */
+void draw_cross(int x1,int y1,int col1,int col2)
+ {
+	/* (x1,y1) = coordinate of the center ,
+	col1= color of the circle,col2=color of the cross*/
+
+	setlinestyle(SOLID_LINE,0,1);
+	setcolor(3);
+	circle(x1,y1,16);		/*the main circle with shade*/
+	setcolor(8);
+	circle(x1-1,y1,16);
+	setfillstyle(1,col1);
+	floodfill(x1,y1,8);            /*filling the circle*/
+
+	setcolor(3);
+	arc(x1-8,y1-7,45,225,2);        /* the arcs on the edges of the cross*/
+	arc(x1+6,y1+8,225,45,2);
+	line(x1-6,y1-8,x1+8,y1+6);	/*the lines connecting the edges*/
+	line(x1-9,y1-5,x1+5,y1+9);
+	arc(x1-8,y1+8,135,315,2);		/*the arcs on the edges*/
+	arc(x1+6,y1-7,315,135,2);
+	line(x1-7,y1+10,x1+8,y1-5);		/*the lines connecting the edges*/
+	line(x1-10,y1+7,x1+4,y1-7);
+	setcolor(15);
+	line(x1-3,y1-2,x1+1,y1+2);		/*two white lines to remove the*/
+	line(x1-4,y1+3,x1+3,y1-2);		/*black cross intersecting lines*/
+
+	setfillstyle(1,col2);           /*fill the area bounded by black lines*/
+	floodfill(x1,y1,3);
+
+	setcolor(3);
+	arc(x1+7,y1+8,225,45,2);
+	arc(x1+7,y1-7,315,95,2);          /* for the shade of the cross mark*/
+	line(x1+3,y1,x1+9,y1+6);
+	line(x1+4,y1,x1+9,y1-5);
+}
+
+/* this function draws the little windows on the page
+   which shows some text on any selected topic */
+void draw_brief_window(int x1,int y1,int x2,int y2,int state,int c1,int c2)
+{
+	/* total window(x1,y1,x2,y2)  state=up(1)/down(0)
+	    c1 = color of the bar, c2 = color of the background */
+	int col1,col2,col3,col4;
+	/* if in up state*/
+	col1 = 3;			/* black*/
+	col2 = col4 = 8;		/* dark ash*/
+	col3 = 15;			/* white*/
+
+	if(!state)				/* if in down state*/
+	{
+		col1^= col2^= col1^= col2;      /* interchange black & ash*/
+		col3^= col4^= col3^= col4;	/* interchange white & ash*/
+	}
+	setlinestyle(SOLID_LINE,0,2);
+	setcolor(col1);		      		/* black in up state/ash in down state*/
+	rectangle(x1,y1,x2,y2);			/* border*/
+	line(x1+1,y1+15,x2-2,y1+15);		/* dividing lines*/
+
+	setcolor(col3);				/* white in up state/ash in down state*/
+	line(x1+1,y1+1,x2-1,y1+1);		/* lines for 3d look*/
+	line(x1+1,y1+1,x1+1,y2-1);
+	line(x1+1,y1+16,x2-1,y1+16);
+	setcolor(col2);                   	/* ash/black lines for 3d look*/
+	line(x1,y1,x2-1,y1);              	/* top line*/
+	line(x1,y1,x1,y2-1);              	/* left line*/
+	setcolor(col4);                         /* ash/white lines for 3d look*/
+	line(x2-1,y1,x2-1,y2-1);	  	/* right line*/
+	line(x1,y2-1,x2-1,y2-1);	  	/* bottom line*/
+	line(x1+1,y1+14,x2-2,y1+14);	  	/* shades for the dividing lines*/
+
+	setfillstyle(1,c1); 			/* color of upper portion*/
+	bar(x1+2,y1+2,x2-2,y1+13);
+	setfillstyle(1,c2);			/* base of the windows*/
+	bar(x1+2,y1+17,x2-2,y2-2);
+}
+
+/* a function to display the text about the given topic on the window */
+ void showtext_window(int x1,int y1,int c1,int c2,int header,int text)
+ {
+	/* (x1,y1,x2,y2) co-ordinates used to draw the whole window
+	    header = array index header, text = array index text*/
+
+	int i;
+	settextstyle(0,0,1);
+	color_text(x1+10,y1+4,lines[header],c1);	/*header of the window*/
+
+	settextstyle(2,0,4);
+	for(i=0;i<5;i++)			/* the explanation */
+	{                                       /* in 5 lines*/
+		color_text(x1+8,y1+25,explain[text][i],c2);
+		y1+=15;
+	}
+ }
+
+/* this function displays the text in specified color */
+void color_text(int x,int y,char *text,int col)
+{
+	//char txt[35];
+	if(text==NULL)
+		return;
+	//strcpy(txt,text);
+	//txt[strlen(txt)]='\0';
+	setcolor(col);
+	outtextxy(x,y,text);
+}
+/* this function displays the text in the bold font in the menu */
+void menu_text(int x,int y,char *text,int col)
+{
+	settextstyle(2,0,6);
+	color_text(x,y,text,col);
+	color_text(x+1,y,text,col);
+	color_text(x+1,y+1,text,col);
+}
+
+
+/* This function makes sound of given frequency for a certain time */
+void make_sound(int freq,int hold)
+{
+	sound(freq);
+	delay(hold);
+	nosound();
+}
+
+/* this function draws any button of given size */
+void button(int x1,int y1,int x2,int y2,int col, int sty)
+{
+	int col1=15,col2=8;
+	setfillstyle(1,col);
+	bar(x1,y1,x2,y2);
+	if(sty)      //sty = 1;
+		col1^=col2^=col1^=col2;
+
+	setcolor(col1);
+	setlinestyle(SOLID_LINE,1,2);
+	line(x1,y1,x1,y2);
+	line(x1,y1,x2,y1);
+
+	setcolor(col2);
+	line(x1,y2,x2,y2);
+	line(x2,y2,x2,y1);
+}
+
+/* this function makes the button down when mouse is clicked on it
+   & makes the button up when mouse is released */
+void up_down_button(int x1,int y1,int x2,int y2,int x3,int y3,int n,int col1,int col2,int col3)
+{
+
+	hideMouse();
+	button(x1,y1,x2,y2,col3,1);
+	setcolor(col1);
+	outtextxy(x3,y3,lines[n]);
+	showMouse();
+
+	while(1) {
+		if (mouseReleased()) {
+			hideMouse();
+			button(x1,y1,x2,y2,col3,0);
+			break;
+		}
+	}
+
+	color_text(x3,y3,lines[n],col2);
+	showMouse();
+	make_sound(400,100);/////////////////
+
+}
+
+/* this function shows the last closed book	*/
+void last_close_book(void)
+{
+	int i,y;
+
+	hideMouse();
+	setfillstyle(1,6);   	/*main book*/
+	bar(215,60,430,430);
+
+	setfillstyle(1,4);   	/*left red border of the book*/
+	bar(420,60,430,430);
+	bar(430,70,440,422);
+
+	setcolor(4);   		/* curved portion on the left side of the book*/
+	setfillstyle(1,4);
+	sector(430,70,90,0,10,10);
+	sector(430,420,270,360,10,10);
+
+	setfillstyle(1,3);
+	bar(215,62,205,429);  		 /* the seen pages for the dimension */
+	setfillstyle(1,0);
+	bar(214,70,209,420);
+
+	setlinestyle(SOLID_LINE,1,1);    /*light ash lines on the side of pages*/
+	setcolor(7);
+	line(204,62,204,429);
+	line(205,430,215,430);
+	line(215,432,431,432);
+
+	setcolor(3);      		/* black border on the sides*/
+	setlinestyle(SOLID_LINE,1,2);
+	line(215,60,431,60);
+	line(215,431,431,431);
+	line(215,60,215,431);
+	setcolor(6);                    /* brown lines*/
+	line(440,70,440,420);
+	line(420,61,420,429);
+
+	setcolor(0);
+	setlinestyle(SOLID_LINE,1,3);
+	for(i=0,y=81;i<16;i++,y+=22)    /*the dots*/
+		circle(425,y,2);
+	setcolor(3);  			/* spiral portion of the book*/
+	for(i=0,y=77;i<16;i++,y+=22)
+	{
+		ellipse(434,y,200,41,11,9);
+		ellipse(434,y+1,200,41,10,8);
+	}
+	setfillstyle(1,1);
+	bar(240,80,395,81); 		/*uppermost thin bar*/
+	bar(240,80,241,220);		/* left bar*/
+	bar(310,410,400,411); 		/*lower bar*/
+	bar(400,410,401,315);		/* rightmost bar*/
+
+	settextstyle(1,0,3);         // delete korle problem hoy
+	color_text(265,220,"",0);	/*light brown text*/
+}
+
+
+void exit_noexit()
+{
+	int i,x,y;
+	int j=-2,pr=-1;
+
+	hideMouse();
+	draw_brief_window(225,190,415,290,1,6,0);	/* draw the close message window*/
+	draw_3dbox(255,260,300,280,15);			/* draw the yes button*/
+	draw_3dbox(335,260,380,280,15);			/* draw the no button*/
+
+	settextstyle(0,0,1);
+	color_text(233,195,"EASY TYPING",15);	/* header of the window*/
+	color_text(238,215,"Do you really want to",3);
+	color_text(265,230,"close the book?",3);	/* body of the window*/
+	color_text(266,267,lines[21],3);		/* yes*/
+	color_text(351,267,lines[22],3);           /* no*/
+	showMouse();
+
+	while(1)
+	{
+		while(1)
+		{
+			x=getMouseX();          /* get the mouse position*/
+			y=getMouseY();
+
+			for(i=0;i<2;i++)
+			{
+				if(x>=255+(i*80)&&x<=300+(i*80)&&y>=260&&y<=280 )
+				{
+
+					j=i;     /* check the position*/
+					break;
+				}
+			}
+			if(j>=0&&j<2&& j!=pr)
+			{
+				hideMouse();
+				draw_3dbox(255+(j*80),260,300+(j*80),280,6);	/* change the color of the box*/
+				/* change the text color*/
+				if(j)
+					color_text(351,267,lines[22],15);	/*cursor on no*/
+				else if(!j)
+					color_text(266,267,lines[21],15);   /*cursor on yes*/
+				showMouse();
+			}
+
+			if(j!=pr && pr>=0 && pr<2)
+			{
+				hideMouse();
+				draw_3dbox(255+(pr*80),260,300+(pr*80),280,15);
+				/* when mouse moves away change the color to normal one*/
+				if(pr)
+					color_text(351,267,lines[22],3);
+				else if(!pr)
+					color_text(266,267,lines[21],3);
+				showMouse();         /*cursor on yes/no*/
+			}
+			pr = j;	/* keeps the current postion to use next time as previous*/
+			j = -1;
+
+			if(mouseClicked())
+			{
+				x=getMouseX();       /*get the position where mouse is clicked*/
+				y=getMouseY();
+				break;
+			}
+		}/*end of while 2*/
+
+		/*check the position of mouse clicked*/
+		if(x>=335&&x<=380&&y>=260&&y<=280)
+		{
+			up_down_button(335,260,380,280,351,267,22,15,15,6);
+			showMouse();     /*if clicked on no return to previous stage*/
+			return;
+		}
+		if(x>=255&&x<=300&&y>=260&&y<=280)
+		{
+			up_down_button(255,260,300,280,266,267,21,15,15,6);
+			clearviewport();
+			last_close_book();  /* show the closing book*/
+			delay(1000);
+			exit(0);         /*if clicked on yes exit from the program*/
+		}
+	}/*end of while 1*/
+}
+

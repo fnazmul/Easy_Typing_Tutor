@@ -1,0 +1,21 @@
+
+     `Easy Typing'- is a typing software, which   deals to improve one's   typing skill. It enables one to type more quickly and accurately.For users of windows,several kinds of typing softwares are available in market. But this `Easy Typing'- is an introduction to improve one's typing skill in DOS mode specially. 
+
+                                             
+CURRENT FEATURES:
+     It is a user friendly software.
+     Shows run time information.
+     Typing result on speed, accuracy can be shown any time while typing.
+     Help to learn all keys on keyboard with exclusive animation.
+     Attractive Graphics are used.
+     Complete help on all commands.
+
+FUTURE ENHANCEMENTS:
+More games
+Printing option.
+More user friendly.
+High quality graphics
+More professional outlook.
+Individual user’s profile storing option
+
+

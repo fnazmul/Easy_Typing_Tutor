@@ -1,0 +1,12 @@
+   Beginner level starts with the very basics of  typewriting. You'll learnthe arrangement of the   Keyboard and how to use  the correct finger for   each key.If you've never typed before or know nothing of the typing method,you are a beginner. The  Beginner level introducesthe user to all of the   alphabet keys, numeric,  symbolic keys and the useof Left and Right Shift.                               You will get only 3  minutes to practice the alphabetic, numeric and  symbolic keys. The Left  and Right Shift lesson   will give you 6 minutes  to practice. Continuous  time showing bar'll show you the remaining time.  And the circle downword  will help you to assume  how close you've reached the limited time.
+
+    RUN TIME INFORMATION bar will show how many  
+keys you have pressed,  how many of these are correct, how many are wrong and how many corrections have you made by pressingthe `BackSpace' key.
+
+   When you press a key correctly the letter willbe shown in RED else will be shown in BLUE with a SOUND. While continuing alesson,if you press `ESC'key, you'll find Elapsed time,the percentage of      
+Accuracy, percentage of  pressing backspace and   the Speed(cpm) based on correct keys,not on pressing keys - all of which  contain comments on your performance. If you wish to continue, you should  press `Continue' button. And if you wish to start anothor lesson you should press `Close' button.
+
+
+
+ONE thing to remember!!
+     You do not need to press ENTER to go to the next line. Just pressing Space Bar will help you  to go through....

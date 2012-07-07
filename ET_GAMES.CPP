@@ -1,0 +1,687 @@
+void crossword(void);//
+void crossword_game_screen(void);//
+void inact_cwtext(int roc,int x,int y,int no,char ch);//
+void show_cwtext(int roc,int x,int y,int no,char *word);//
+void draw_cwline(enum cw rc,int x,int y,int no,char *word);//
+void draw_hbricks(int x,int y,int now,int len);//
+void hbrick_game_screen(void);//
+void bubble_game(void);//
+void use_cross(int score);  //
+void bubble_game_screen(void);//
+void show_score(int num,int x,int y);//
+void draw_bubble(int x1,int y1,int col,int up);//
+void draw_cross(int x1,int y1,int col1,int col2);//
+
+void open_book(void);
+void use_back_arrow(void);
+void draw_3dbox(int x1,int y1,int x2,int y2,int c1);
+void draw_arrow(int col1,int col2);
+void menu_text(int x,int y,char *text,int col);
+void color_text(int x,int y,char *text,int col);
+void menu_screen(int start,int end,int y1,int col);
+void undr_line(int x,int y,int no,int len,int gap,int col);   // a d
+void showtext_window(int x1,int y1,int c1,int c2,int header,int text);  //a d
+void draw_brief_window(int x1,int y1,int x2,int y2,int state,int c1,int c2);	//a d
+void caption_box(int x1,int y1,int x2,int y2,int x3,int y3,int size,char* name);//a d
+void menu_choice(int start,int end,int y1,int ncol,int ccol,int menu,int *x,int *y);
+
+extern char lines[][25];
+enum cw {row,column,down,up,right,left};
+char cwords[][8] = { "fariha","nazmul","muna","tahmina","tahsin","shabnam" };
+
+
+/* This function draws the games menu */
+void games_menu_screen(void)
+{
+	menu_screen(24,27,220,9);
+
+	hideMouse();
+	caption_box(45,105,180,155,65,102,2,"Games");	/* show "games" on the left page*/
+	settextstyle(1,0,2);			/* show the text "games" at the top*/
+	color_text(380,176,lines[4],5);
+	color_text(381,176,lines[4],5);
+	draw_arrow(2,5);  	      /* back arrow */
+	showMouse();
+}
+
+/* this function controls the use of the mouse on the games menu*/
+void games_menu(void)
+{
+	int i,j,x,y;//,prev=0,back=0,w=0;;
+	games_menu_screen();
+	while(1)
+	{
+		menu_choice(24,26,220,9,4,4,&x,&y);
+
+		for(i=1;i<4;i++)        /* check the position*/
+			if(x>=380&&x<=560 &&y>=200+(i*20) && y<=200+((i+1)*20))
+				break;
+		if(i>0&&i<4)
+		{
+			hideMouse();
+			settextstyle(2,0,10);
+			switch(i)
+			{
+				case 1:                     /* bubble game*/
+					make_sound(400,100);
+					hideMouse();
+					bubble_game_screen();
+					break;
+				case 2:			    /* crossword*/
+					make_sound(400,100);
+					hideMouse();
+					crossword_game_screen();
+					break;
+				case 3:                     /* hanging bricks*/
+					make_sound(400,100);
+					hideMouse();
+					hbrick_game_screen();
+					break;
+			}
+			clearviewport();
+			open_book();
+			games_menu_screen();
+		}
+		else if(x>=72&& x<=99&& y>=376&& y<=404)	/* if clicked on back arrow*/
+		{
+			make_sound(400,100);
+			return;                                 /* go to the main menu*/
+		}
+		else
+			continue;	/* if not clicked on menu of back arrow continue*/
+
+	}/*end of while 1*/
+}
+
+/* the bubble game */
+void bubble_game_screen(void)
+{
+	int i,j,y,ch;
+
+	hideMouse();
+	clearviewport();
+	/* back screen */
+	draw_3dbox(148,5,getmaxx()-145,getmaxy()-5,6);	/* brown*/
+	draw_3dbox(160,20,getmaxx()-160,getmaxy()-20,15);	/*white*/
+	setfillstyle(1,4);
+	bar(150,7,159,getmaxy()-7);	/* red */
+
+	for(i=0,y=44;i<16;i++,y+=26)    /* the dots */
+	{
+		setcolor(7);
+		circle(170,y,4);
+		setfillstyle(1,7);
+		floodfill(170,y,7);
+	}
+	setcolor(8);  			/* spiral portion of the book */
+	setlinestyle(SOLID_LINE,1,3);
+	for(i=0,y=40;i<16;i++,y+=26)
+	{
+		ellipse(158,y,140,340,14,11);
+		ellipse(158,y+1,140,340,13,9);
+	}
+
+
+	/* 1st screen */
+	for(i=10;i<161;i+=10)
+	{				   /* slowly draw a white box*/
+		draw_3dbox(215,140,415,140+i,15);
+		delay(50);
+	}
+
+	draw_bubble(380,80,13,1);
+	delay(50);
+	draw_bubble(230,400,13,1);	/* arbitrary bubbles */
+	delay(50);
+	draw_bubble(440,360,13,1);
+	delay(200);
+	settextstyle(3,0,5);
+	color_text(245,165,"POP",9);
+	delay(500);
+	color_text(315,165,"-UP",9);	/* first text */
+	delay(500);
+	color_text(235,225,"BUBBLES",9);
+	delay(500);
+	j=15;
+	for(i=1;i<4;i++)
+	{
+		delay(500);
+		color_text(245,165,"POP",9);          /* blink*/
+		color_text(315,165,"-UP",9);
+		color_text(235,225,"BUBBLES",9);
+		delay(500);
+		setfillstyle(1,15);
+		bar(220,155,410,280);
+	}
+	//delay(1500);
+	for(i=20;i<161;i+=20)
+	{
+		setfillstyle(1,15);      /* slowly remove the white box*/
+		bar(215,300,415,300-i);
+		delay(50);
+	}
+	bar(180,30,getmaxx()-170,getmaxy()-30);   /* erase the page */
+
+	/* 2nd screen */
+	delay(500);
+	draw_3dbox(190,45,getmaxx()-180,65,13); /* blue header*/
+	for(i=10;i<331;i+=10)
+	{
+		draw_3dbox(190,65,getmaxx()-180,65+i,2);/* light blue screen*/
+		delay(20);
+	}
+
+	settextstyle(3,0,1);
+	color_text(255,42,"POP-UP BUBBLES",15);    /* header*/
+	delay(100);
+
+	draw_3dbox(300,410,460,450,2);         /* score box */
+	draw_3dbox(390,418,450,442,5);
+	settextstyle(3,0,1);
+	color_text(310,418,"Score:",3);
+	//draw_cross(210,430,11,9);
+	delay(500);
+
+	y=0;
+
+	for(j=0;j<10;j++)                    /* the bubbles */
+	{
+		for(i=0;i<8;i++)
+		{
+			draw_bubble(212+(i*32),86+(j*32),13,1);
+			delay(50);
+		}
+	}
+
+	for(i=0;;i++)
+	{
+		 settextstyle(2,0,5);
+		 color_text(195,415,"Press ENTER",3);
+		 color_text(195,430,"to START",3);
+
+		 delay(500);
+		 setfillstyle(1,15);
+		 bar(185,410,295,450);
+		 delay(300);
+		 fflush(stdin);
+		 if(kbhit())
+			 ch=getch();
+			 if(ch==13)           //when Enter is pressed,game starts
+			     break;
+	}
+
+
+	for(j=0;j<10;j++)                    /* the popped up bubbles */
+	{
+		for(i=0;i<8;i++)
+		{
+			delay(50);
+			draw_bubble(212+(i*32),86+(j*32),13,0);
+			y+=15;
+			draw_3dbox(390,418,450,442,9);
+			show_score(y,397,418);
+		}
+	}
+
+	draw_cross(210,430,11,9);
+	showMouse();
+	use_cross(y);
+}
+
+ void crossword_game_screen()
+  {
+	int i,j,y,ch;
+
+	hideMouse();
+	clearviewport();
+	/* back screen */
+	draw_3dbox(148,5,getmaxx()-145,getmaxy()-5,6);	/* brown*/
+	draw_3dbox(160,20,getmaxx()-160,getmaxy()-20,15);	/*white*/
+	setfillstyle(1,4);
+	bar(150,7,159,getmaxy()-7);	/* red */
+
+	for(i=0,y=44;i<16;i++,y+=26)    /* the dots */
+	{
+		setcolor(7);
+		circle(170,y,4);
+		setfillstyle(1,7);
+		floodfill(170,y,7);
+	}
+	setcolor(8);  			/* spiral portion of the book */
+	setlinestyle(SOLID_LINE,1,3);
+	for(i=0,y=40;i<16;i++,y+=26)
+	{
+		ellipse(158,y,140,340,14,11);
+		ellipse(158,y+1,140,340,13,9);
+	}
+
+
+	/* 1st screen */
+
+	for(j=0;j<50;j+=30)
+	{
+		for(i=0;i<(25*9);i+=25)	/* slowly draw the boxes 1 by 1*/
+		{
+			draw_cwline(row,210+i+j,180+(j*2),1,NULL);
+			delay(150);
+			if(j==30 && i==(25*5))
+				break;
+		}
+	}
+
+	delay(500);
+	for(i=1;i<3;i++)
+	{
+		draw_cwline(down,210,180,9,"CROSSWORD");
+		draw_cwline(down,240,240,6,"PUZZLE");
+		delay(500);                                  /*blink*/
+		draw_cwline(up,210,180,9,NULL);
+		draw_cwline(up,240,240,6,NULL);
+		delay(500);
+	}
+
+	draw_cwline(down,210,180,9,"CROSSWORD");
+	draw_cwline(down,240,240,6,"PUZZLE");
+	delay(1500);
+
+	for(i=20;i<161;i+=20)
+	{
+		setfillstyle(1,15);      /* slowly remove the boxes*/
+		bar(205,300,440,300-i);
+		delay(50);
+	}
+
+	/* 2nd screen */
+	delay(500);
+	draw_3dbox(190,45,getmaxx()-180,65,1); /* brown header*/
+	for(i=10;i<331;i+=10)
+	{
+		draw_3dbox(190,65,getmaxx()-180,65+i,15);/* white screen*/
+		delay(20);
+	}
+	setcolor(15);
+	settextstyle(3,0,1);
+	outtextxy(240,42,"CROSSWORD PUZZLE");    /* header*/
+	delay(100);
+
+	draw_3dbox(300,410,460,450,1);         /* score box */
+	draw_3dbox(390,418,450,442,0);
+	settextstyle(3,0,1);
+	setcolor(3);
+	outtextxy(310,418,"Score:");
+	//draw_cross(210,430,11,9);
+	delay(500);
+
+
+	for(i=0;;i++)
+	{
+		 settextstyle(2,0,5);
+		 color_text(195,415,"Press ENTER",3);
+		 color_text(195,430,"to START",3);
+
+		 delay(500);
+		 setfillstyle(1,15);
+		 bar(185,410,295,450);
+		 delay(300);
+		 fflush(stdin);
+		 if(kbhit())
+			 ch=getch();
+			 if(ch==13)           //when Enter is pressed,game starts
+				return;
+	}
+	//showMouse();
+	//use_cross(y);
+}
+
+void hbrick_game_screen()
+{
+	int i,j,y,ch;
+
+	hideMouse();
+	clearviewport();
+	/* back screen */
+	draw_3dbox(148,5,getmaxx()-145,getmaxy()-5,6);	/* brown*/
+	draw_3dbox(160,20,getmaxx()-160,getmaxy()-20,15);	/*white*/
+	setfillstyle(1,4);
+	bar(150,7,159,getmaxy()-7);	/* red */
+
+	for(i=0,y=44;i<16;i++,y+=26)    /* the dots */
+	{
+		setcolor(7);
+		circle(170,y,4);
+		setfillstyle(1,7);
+		floodfill(170,y,7);
+	}
+	setcolor(8);  			/* spiral portion of the book */
+	setlinestyle(SOLID_LINE,1,3);
+	for(i=0,y=40;i<16;i++,y+=26)
+	{
+		ellipse(158,y,140,340,14,11);
+		ellipse(158,y+1,140,340,13,9);
+	}
+
+
+	/* 1st screen */
+
+	draw_hbricks(190,72,4,80);
+	delay(500);
+	draw_hbricks(405,72,4,250);
+	delay(200);
+	settextstyle(3,0,5);
+	for(i=1;i<3;i++)
+	{
+		delay(500);
+		color_text(235,165,"HANGING",4);          /* blink*/
+		color_text(250,225,"BRICKS",4);
+		delay(500);
+		setfillstyle(1,15);
+		bar(220,155,410,280);
+	}
+	delay(500);
+	color_text(235,165,"HANGING",4);	/* first text */
+	color_text(250,225,"BRICKS",4);
+
+
+	delay(1500);
+	for(i=20;i<420;i+=30)
+	{
+		setfillstyle(1,15);      /* slowly remove the page*/
+		bar(180,450,470,450-i);
+		delay(50);
+	}
+
+	/* 2nd screen */
+	delay(500);
+	draw_3dbox(190,45,getmaxx()-180,65,4); /* red header*/
+	for(i=10;i<331;i+=10)
+	{
+		draw_3dbox(190,65,getmaxx()-180,65+i,15);/* white screen*/
+		delay(20);
+	}
+	setcolor(15);
+	settextstyle(3,0,1);
+	outtextxy(240,42,"HANGING BRICKS");    /* header*/
+	delay(100);
+
+	draw_3dbox(300,410,460,450,15);         /* score box */
+	draw_3dbox(390,418,450,442,4);
+	settextstyle(3,0,1);
+	setcolor(3);
+	outtextxy(310,418,"Score:");
+
+	for(i=0;;i++)
+	{
+		 settextstyle(2,0,5);
+		 color_text(195,415,"Press ENTER",3);
+		 color_text(195,430,"to START",3);
+
+		 delay(500);
+		 setfillstyle(1,15);
+		 bar(185,410,295,450);
+		 delay(300);
+		 fflush(stdin);
+		 if(kbhit())
+			 ch=getch();
+			 if(ch==13)           //when Enter is pressed,game starts
+				return;
+	}
+	//showMouse();
+	//use_cross(y);
+}
+
+
+ /* This function draws the bubble either popped or not */
+ void draw_bubble(int x1,int y1,int col,int up)
+  {
+	// (x1,y1) = coordinate of the center,col = color, up =1/0
+
+	hideMouse();
+	setlinestyle(SOLID_LINE,0,1);
+	setcolor(8);
+	circle(x1,y1,16);		/*the main circle*/
+	setfillstyle(1,col);
+	floodfill(x1,y1,8);            /*filling the circle*/
+
+	if(up)
+	{
+		setcolor(3);
+		arc(x1-1,y1,270,90,16);
+		setcolor(15);
+		arc(x1+1,y1+1,124,160,15);
+		arc(x1+8,y1+1,140,172,19);        /* the white curve for shade*/
+		line(x1-13,y1-3,x1-11,y1-1);
+		setfillstyle(1,15);
+		floodfill(x1-11,y1-5,15);
+	}
+
+	else
+	{
+		setcolor(7);
+		arc(x1+1,y1,45,260,16);        // the shades for the down bubble
+		setcolor(15);
+		arc(x1-1,y1,270,55,16);
+		//setcolor(3);
+		//settextstyle(1,0,3);
+		//outtextxy(x1-7,y1-15,"N"); //for uppercase letters
+		//outtextxy(x1-7,y1-18,"n");	//for lowercase letters
+	}
+	showMouse();
+  }
+
+/*This function takes int value and shows the int number at a point */
+void show_score(int num,int x,int y)
+{
+	hideMouse();
+	char str[20];
+	sprintf(str,"%d",num);		/* keep the int in the string */
+	//draw_3dbox(390,418,450,442,9);
+	settextstyle(3,0,1);
+	color_text(x,y,str,15);
+	showMouse();
+}
+
+ void draw_cwline(enum cw rc,int x,int y,int no,char *word)
+ {
+	int i,j,k;
+	int c1,c2;
+	char wrd[20];
+	strcpy(wrd,word);
+	k=strlen(wrd);
+	c1 = 0;		//color of blocks
+	c2 =  6;	//color of blocks with letters
+	//int x=35,y=90,no=5;
+
+	if(rc==row)
+	{
+		for(i=5;i<=25;i+=5)      //draw row of blocks
+			for(j=0;j<no*25;j+=25)
+				draw_3dbox(x+j,y,x+25+j,y+i,c1);
+	}
+
+	else if(rc==column)
+	{
+		for(i=5;i<=25;i+=5)      //draw column of blocks
+			for(j=0;j<no*25;j+=25)
+				draw_3dbox(x,y+j,x+i,y+25+j,c1);
+	}
+
+	else if(rc==right)
+	{
+		for(i=5;i<=25;i+=5)      //right slide the blocks
+		{
+			for(j=0;j<no*25;j+=25)
+				draw_3dbox(x,y+j,x+i,y+j+25,c2);
+			delay(4);
+		}
+		show_cwtext(1,x,y,k,wrd); //show letters on blocks
+	}
+
+	else if(rc==left)
+	{
+		for(i=5;i<=25;i+=5)      //left slide the blocks
+		{
+			for(j=0;j<no*25;j+=25)
+				draw_3dbox(x+25-i,y+j,x+i,y+j+25,c1);
+			delay(4);
+		}
+	}
+
+	else if(rc==down)
+	{
+		for(i=5;i<=25;i+=5)      //downward blocks
+		{
+			for(j=0;j<no*25;j+=25)
+				draw_3dbox(x+j,y,x+j+25,y+i,c2);
+			delay(4);
+		}
+		show_cwtext(0,x,y,k,wrd);  //show letters on blocks
+	}
+	else if(rc==up)
+	{
+		for(i=5;i<=25;i+=5)      //upward blocks
+		{
+			for(j=0;j<no*25;j+=25)
+				draw_3dbox(x+j,y+25-i,x+j+25,y+i,c1);
+			delay(4);
+		}
+	}
+ }
+
+ void show_cwtext(int roc,int x,int y,int no,char *word)
+ {
+	int i,j;
+	char wrd[20];
+	strcpy(wrd,word);
+	char ch[2];
+	ch[1] = NULL;
+
+	if(wrd==NULL)
+		return;
+
+	if(roc==0)
+	{
+		j=0;
+		for(i=0;i<=no*25;i+=25)     //show row text
+		{
+			settextstyle(0,0,2);
+			ch[0] = wrd[j];
+			color_text(x+6+i,y+5,ch,15);
+			j++;
+		}
+	}
+	else if(roc==1)
+	{
+		j=0;
+		for(i=0;i<=no*25;i+=25)     //show column text
+		{
+			settextstyle(0,0,2);
+			ch[0] = wrd[j];
+			color_text(x+6,y+5+i,ch,15);
+			j++;
+		}
+	}
+ }
+
+ void inact_cwtext(int roc,int x,int y,int no,char ch)
+ {
+	char pr[2];
+	pr[0] = ch;
+	pr[1] = '\0';
+
+	if(roc==0)
+	{
+		draw_3dbox(x+(no*25),y,x+(no*25)+25,y+25,7);
+		settextstyle(0,0,2);
+		color_text(x+(no*25)+6,y+5,pr,8);
+	}
+
+	else if(roc==1)
+	{
+		draw_3dbox(x,y+(no*25),x+25,y+(no*25)+25,7);
+		settextstyle(0,0,2);
+		color_text(x+6,y+(no*25)+5,pr,8);
+	}
+ }
+
+ void draw_hbricks(int x,int y,int now,int len)
+  {
+	int i,j;
+
+	for(i=0;i<len;i+=40)
+	{
+		setcolor(15);
+		setfillstyle(1,15);
+		bar(x,y+i-40,x+(now*15),y+i-10);
+		setlinestyle(0,1,3);
+		ellipse(x+10,y+i-41,0,180,4,7);
+		ellipse(x+(now*15)-10,y+i-41,0,180,4,7);
+
+		draw_3dbox(x,y+i,x+(now*15),y+i+30,4);
+
+		setlinestyle(0,1,3);
+		setcolor(8);
+		ellipse(x+10,y+i-1,0,180,4,7);      //rings
+		ellipse(x+(now*15)-10,y+i-1,0,180,4,7);     //rings
+		setcolor(8);
+		setlinestyle(2,1,3);
+		line(x+10,y-9,x+10,y+i-9);
+		line(x+(now*15)-10,y-9,x+(now*15)-10,y+i-9);
+
+		delay(2);
+	}
+  }
+
+
+/* this function controls the use of the mouse on the cross mark when
+   there is no other clickable objects on the page */
+void use_cross(int score)
+{
+	int x,y,cl=0;
+	if(mousePresent())
+		showMouse();
+	while(1)
+	{
+		while(1)
+		{
+			x=getMouseX();	/* get the cursor positon*/
+			y=getMouseY();
+
+			if(x>=184&x<=226 &&y>=414 &&y<=446&& !cl) /* mouse on the close button*/
+			{
+				cl =1;			/* flag used to control the color of the close button*/
+				hideMouse();
+				draw_cross(210,430,0,6);	/*change color of the close cross */
+				showMouse();
+			}
+			else if((x<184||x>226 ||y<414 ||y>446)&& cl)
+			{
+				cl =0;                        /* when mouse moves away from the cross*/
+				hideMouse();
+				draw_cross(210,430,11,9);		/* normal color*/
+				showMouse();
+			}
+			if(mouseClicked())
+			{
+				x=getMouseX();
+				y=getMouseY();
+				while(1)
+					if(mouseReleased())		/* get the position*/
+						break;			/* where mouse is clicked*/
+				break;					/* and released */
+			}
+		 }/*end of while 2*/
+		if(x>=184&&x<=226 &&y>=414 &&y<=446)	/* if clicked on cross*/
+		{
+			draw_brief_window(225,190,415,290,1,6,0);	/* draw the score message window*/
+			settextstyle(0,0,1);
+			color_text(233,195,"POP-UP BUBBLES",15);	/* header of the window*/
+			settextstyle(2,0,6);
+			color_text(242,212,"Your final score",3);
+			color_text(310,230,"is",3);	/* body of the window*/
+			draw_3dbox(287,255,352,282,6);
+			show_score(score,296,256);
+			delay(2000);
+			return;
+		}
+	}/*end of while 1*/
+}
